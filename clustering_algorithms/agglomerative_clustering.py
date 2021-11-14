@@ -1,33 +1,13 @@
 import heapq
 import numpy as np
 from sklearn.metrics import pairwise_distances
-from feature_importance_development.feature_importance_hierarchical_higher_dimensions import feature_importance_weight_by_volume_agglomerative
-import itertools
+from clustering_algorithms.outer_hull import make_outer_hull
+from feature_importance.feature_importance_hierarchical_higher_dimensions import feature_importance_weight_by_volume_agglomerative
 
 
-"""
-Making change to see if it works
-"""
-
-
-def domain(data):
-    """
-    Make the outer convex hull.
-    Points = out convex hull
-    min_data = lower bound of point
-    max_data= upper bound of data points
-    """
-    min_data = np.min(data, axis=0)
-    max_data = np.max(data, axis=0)
-    dis = max_data - min_data
-    lower_lim = min_data - dis
-    upper_lim = max_data + dis
-    outer_hull = list(itertools.product(*zip(lower_lim, upper_lim)))
-    outer_hull = [np.array(i) for i in outer_hull]
-    return outer_hull, min_data, max_data
 
 # Single link
-def agglomerative_clustering_single_link(data):
+def agglomerative_clustering_single_link(data, return_feature_importance=True):
     # single linkage = minimum
     deleted_labels = set()
     initial_distance_matrix = pairwise_distances(data)
@@ -90,10 +70,13 @@ def agglomerative_clustering_single_link(data):
 
 
         no_clusters = no_clusters - 1
-    points, min_data, max_data = domain(data)
-    feature_importance = feature_importance_weight_by_volume_agglomerative(data, np.array(cluster_labels), points, min_data, max_data)
-    print("calculated agglomerative")
-    return np.array(cluster_labels), np.array(distances), joined_clusters, feature_importance
+    points, min_data, max_data = make_outer_hull(data)
+    if return_feature_importance:
+        feature_importance = feature_importance_weight_by_volume_agglomerative(data, np.array(cluster_labels), points, min_data, max_data)
+
+        return np.array(cluster_labels), np.array(distances), joined_clusters, feature_importance
+    else:
+        return np.array(cluster_labels), np.array(distances), joined_clusters
 
 
 ###########################
@@ -169,8 +152,7 @@ def agglomerative_clustering_complete_link(data, feature_importance=True):
 
         no_clusters = no_clusters - 1
 
-    #print("calculated agglomerative")
-    points, min_data, max_data = domain(data)
+    points, min_data, max_data = make_outer_hull(data)
 
     if feature_importance:
         feature_importance = feature_importance_weight_by_volume_agglomerative(data, np.array(cluster_labels), points, min_data, max_data)

@@ -1,2 +1,4 @@
 # interpretable_clustering
-Interpretable Clustering: Distance-Based Feature Importance (for my honours thesis)
+Interpretable Clustering: Distance-Based Feature Importance 
+
+Repository currently being developed.
