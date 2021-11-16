@@ -5,7 +5,11 @@ This repository presents a general technique to explain what features are
 important to the division of cluster in cluster analysis. 
 This feature importance technique uses Voronoi Diagrams to calculate feature
 importance in n-dimensional case. This technique has been developed for 
-existing partitioning and hierarchical clustering algorithms. 
+existing partitioning and hierarchical clustering algorithms.
+
+Note: The high time complexity of Voronoi Diagrams implemented using the qhull 
+library means that this technique is best for up to 6-dimensional datasets.
+
 
 
 This repository contains:
@@ -35,6 +39,7 @@ feature_importance = \frac{\sum_{d in decision_boundaries} v(d) * fi(d) }
 where v(d) is the volume of decision boundary d in the bounding box 
 and 
  fi(d) is the feature importance of decision boundary d
+
 
 Repository currently being developed.
 
