@@ -32,7 +32,8 @@ def calculate_agglomerative_feature_importance(data, labels, outer_shape, min_da
     feature_importances = np.r_[feature_importances, [np.zeros(len(data[0]))]]
     # verify this worked as this first layer of feature importance should be equal to the feature importance of
     # general implementation
-    assert feature_importances[0] == initial_feature_importance
+    np.allclose(feature_importances[0], initial_feature_importance)
+
     if specific_layer_of_hierarchy is None:
         return feature_importances
     else:
