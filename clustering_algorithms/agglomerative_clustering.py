@@ -6,8 +6,15 @@ from feature_importance.feature_importance_agglomerative_clustering import calcu
 
 
 def agglomerative_clustering_single_link(data, return_feature_importance=True):
-    # single linkage = minimum
-    deleted_labels = set()
+    """Perform basic Agglomerative Clustering with Single Linkage.
+
+    :param ndarray data: list of data points
+    :param bool return_feature_importance: if feature importance does or doesn't want to be calculated
+    :return: ndarray cluster_labels: list of cluster labels at each iteration,
+             ndarray distances: list of distance between clusters merged at each iteration
+             ndarray joined_clusters: list of pairs of clusters merged at each iteration
+             ndarray feature_importance: feature importance at each iteration (if return_feature_importance=True)
+    """
     initial_distance_matrix = pairwise_distances(data)
     heap = []
     distances = []
@@ -25,7 +32,7 @@ def agglomerative_clustering_single_link(data, return_feature_importance=True):
     for i in range(len(data)):
         for j in range(i + 1, len(data)):
             heap.append((initial_distance_matrix[i][j], f"{i} {j}"))
-    # heap ify
+    # heapify
     heapq.heapify(heap)
 
     no_clusters = len(data)
@@ -81,6 +88,14 @@ def agglomerative_clustering_single_link(data, return_feature_importance=True):
 # Complete link
 
 def update_proximity_matrix(proximity_matrix, min_id, max_id):
+    """Merge two clusters in proximity matrix together.
+
+    :param ndarray proximity_matrix: proximity matrix between clusters
+    :param int min_id: minimum cluster id of one of the two clusters being merged
+    :param int max_id: maximum cluster id of one of the two clusters being merged
+    :return: updated proximity matrix with two clusters merged
+    :rtype: ndarray
+    """
     val1 = list(proximity_matrix[:, min_id][:min_id]) + list(proximity_matrix[:, min_id][min_id+1:max_id]) + list(proximity_matrix[:, min_id][max_id+1:])
     val2 = list(proximity_matrix[:, max_id][:min_id]) + list(proximity_matrix[:, max_id][min_id+1:max_id]) + list(proximity_matrix[:, max_id][max_id+1:])
     # find updated distances to new cluster
@@ -93,7 +108,14 @@ def update_proximity_matrix(proximity_matrix, min_id, max_id):
     proximity_matrix[:, min_id] = np.array(list(update_distances)[:min_id] + [0]+list(update_distances[min_id:]))
     return proximity_matrix
 
+
 def update_heap(proximity_matrix):
+    """Convert distances in promixity matrix into a heap.
+
+    :param ndarray proximity_matrix: proximity matrix between clusters
+    :return: updated proximity matrix in heap form
+    :rtype: ndarray
+    """
     heap = []
     for row in range(len(proximity_matrix)):
         for col in range(row + 1, len(proximity_matrix)):
@@ -101,10 +123,18 @@ def update_heap(proximity_matrix):
     heapq.heapify(heap)
     return heap
 
-def agglomerative_clustering_complete_link(data, feature_importance=True):
-    # single linkage = minimum
+
+def agglomerative_clustering_complete_link(data, return_feature_importance=True):
+    """Perform basic Agglomerative Clustering with Complete Linkage.
+
+    :param ndarray data: list of data points
+    :param bool return_feature_importance: if feature importance does or doesn't want to be calculated
+    :return: ndarray cluster_labels: list of cluster labels at each iteration,
+             ndarray distances: list of distance between clusters merged at each iteration
+             ndarray joined_clusters: list of pairs of clusters merged at each iteration
+             ndarray feature_importance: feature importance at each iteration (if return_feature_importance=True)
+    """
     proximity_matrix = pairwise_distances(data)
-    heap = []
     distances = []
     cluster_labels = []
     cluster_id = {}
@@ -152,31 +182,11 @@ def agglomerative_clustering_complete_link(data, feature_importance=True):
 
     points, min_data, max_data = make_outer_hull(data)
 
-    if feature_importance:
+    if return_feature_importance:
         feature_importance = calculate_agglomerative_feature_importance(data, np.array(cluster_labels), points, min_data, max_data)
         return np.array(cluster_labels), np.array(distances), joined_clusters, feature_importance
     else:
         return np.array(cluster_labels), np.array(distances), joined_clusters, []
-
-
-#####################
-# Average
-
-
-
-def agglomerative_clustering(data, threshold=None):
-    """
-    :param data: input data
-    :param threshold: smallest number of clusters
-    :return: n x n matrix where row i is the ith layer of the dendogram
-    # an the jth column if the label of the jth data point
-
-    There are two ways to implement to find the minimum value of the
-    """
-    # create distance matrix
-
-
-
 
 
 
